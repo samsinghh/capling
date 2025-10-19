@@ -238,11 +238,21 @@ The app can be deployed to any platform that supports Next.js:
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our comprehensive guides:
+
+- **[TEAM_SETUP.md](./TEAM_SETUP.md)** - Complete setup guide for new team members
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Detailed contribution guidelines and workflow
+- **[DEVELOPMENT_ENVIRONMENT.md](./DEVELOPMENT_ENVIRONMENT.md)** - Development environment setup
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
+
+### Quick Start for Contributors
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test with local Supabase instance
-5. Submit a pull request
+2. Follow the [Team Setup Guide](./TEAM_SETUP.md)
+3. Create a feature branch
+4. Make your changes
+5. Test with local Supabase instance
+6. Submit a pull request
 
 ## 📝 License
 
