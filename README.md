@@ -1,135 +1,94 @@
-# Capling - Personal Finance App with Supabase & GPT
+# 🦕 Capling - AI-Powered Personal Finance Companion
 
-Capling is a friendly personal finance management app featuring an animated dinosaur companion that helps you track spending, set goals, and develop better financial habits. Built with Supabase for secure data storage and OpenAI GPT for intelligent transaction analysis!
+**A gamified personal finance app featuring an AI-powered dinosaur companion that analyzes your spending and helps you build better financial habits.**
 
-## 🌱 Features
+## 🚀 What Makes This Special
 
-- **🔐 User Authentication**: Secure signup/login with Supabase Auth
-- **🗄️ Data Persistence**: Your data is safely stored in Supabase database
-- **🤖 GPT-Powered Analysis**: OpenAI GPT integration for intelligent transaction classification
-- **🦕 Animated Character**: Capling the dinosaur changes mood based on your spending patterns
-- **📊 Real-time Insights**: Live spending analysis and budget tracking
-- **🎯 Goal Tracking**: Set and monitor savings goals with visual progress
-- **🏆 Achievement System**: Earn badges for good financial habits
-- **💳 Transaction Management**: Add, view, and analyze your transactions
-- **🔄 Real-time Sync**: Changes sync instantly across devices
+### 🤖 **AI-Powered Financial Analysis**
+- **GPT-4 Integration**: Every transaction gets analyzed by AI for responsible vs. irresponsible spending
+- **Smart Insights**: Real-time feedback on your financial decisions
+- **Context-Aware**: AI understands the difference between "emergency vet bill" vs "impulse shopping"
 
-## 🚀 Getting Started
+### 🎮 **Gamified Experience**
+- **Capling Character**: Your personal dinosaur companion that reacts to your spending
+- **Happiness Streak**: Tracks consecutive days of good financial behavior
+- **Level System**: Capling evolves and levels up based on your progress
+- **Achievement Badges**: Unlock rewards for good financial habits
 
-### Prerequisites
+### 💡 **Smart Features**
+- **Automatic Budget Adjustment**: AI adjusts your budget when you justify overspending
+- **Real-time Mood Tracking**: Capling's mood reflects your financial health
+- **Personalized Lessons**: AI-generated daily financial education
+- **Transaction Justification**: Explain questionable purchases to AI
 
-- Node.js 18+ and npm
-- Supabase CLI (for local development)
-- OpenAI API key (for GPT analysis)
+## 🛠️ Tech Stack
 
-### 1. Install Dependencies
+**Frontend:**
+- Next.js 15.2.4 + TypeScript
+- Tailwind CSS v4.1.14
+- Radix UI + Lucide React
+
+**Backend:**
+- Next.js API Routes
+- Supabase (PostgreSQL)
+
+**Auth/Storage:**
+- Supabase Auth
+- Supabase Database
+- Real-time subscriptions
+
+**AI:**
+- OpenAI GPT-4
+- Custom LLM analyzer
+
+## 🎯 Key Features
+
+- **🔐 Secure Authentication** - Supabase Auth with JWT tokens
+- **📊 Real-time Dashboard** - Live spending analysis and budget tracking
+- **🤖 AI Transaction Analysis** - GPT-4 classifies every purchase
+- **🎮 Gamified Progress** - Happiness streaks and level progression
+- **💳 Smart Budgeting** - AI adjusts budgets based on justified spending
+- **📚 Personalized Learning** - AI-generated financial lessons
+- **🏆 Achievement System** - Badges for good financial habits
+
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
 npm install --legacy-peer-deps
-```
 
-**Note**: The `--legacy-peer-deps` flag is needed because some UI components haven't been updated for React 19 yet.
-
-### 2. Set Up Environment Variables
-
-```bash
-# Set up OpenAI API key
+# Set up environment variables
 npm run setup-openai
-
-# Set up Supabase configuration
 npm run setup-supabase
-```
 
-### 3. Start Supabase (Local Development)
-
-```bash
-# Install Supabase CLI (if not already installed)
-brew install supabase/tap/supabase
-
-# Start Supabase
+# Start Supabase (local development)
 supabase start
-
-# Apply database migrations
 supabase db reset
-```
 
-### 4. Run the Development Server
-
-```bash
+# Run the app
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) to see Capling in action!
 
-## 🗄️ Database Schema
+## 🎮 How It Works
 
-Capling uses Supabase with the following tables:
+1. **Sign up** and meet Capling, your financial companion
+2. **Add transactions** and watch AI analyze your spending
+3. **Build your happiness streak** by making responsible financial decisions
+4. **Level up Capling** as you develop better habits
+5. **Learn** from personalized AI-generated financial lessons
 
-- **`user_profiles`**: User information and preferences
-- **`accounts`**: Bank accounts with balances
-- **`transactions`**: Transaction history with GPT analysis
-- **`goals`**: Savings goals and progress tracking
+## 🏆 Hackathon Highlights
 
-### Key Features:
-- **Row Level Security (RLS)**: Users can only access their own data
-- **Automatic Timestamps**: Created/updated timestamps on all records
-- **User Signup Trigger**: Automatically creates profile and account on signup
+- **AI Integration**: Seamless GPT-4 integration for intelligent financial analysis
+- **Real-time Updates**: Live data synchronization across all components
+- **Gamification**: Engaging user experience that makes finance fun
+- **Smart Automation**: AI automatically adjusts budgets and provides insights
+- **Modern Stack**: Built with latest Next.js, TypeScript, and Supabase
+- **Responsive Design**: Beautiful UI that works on all devices
 
-## 🤖 GPT Integration
-
-Capling uses OpenAI's GPT-3.5-turbo to analyze transactions and provide intelligent insights.
-
-### Features:
-- **Context-Aware Analysis**: GPT understands transaction context
-- **Personalized Feedback**: Tailored insights for each transaction
-- **Intelligent Classification**: Responsible, Borderline, or Impulsive classifications
-- **Server-Side Processing**: Secure API calls from your server
-
-### Example Analysis:
-- "Emergency vet bill - $300" → **Responsible**: "Taking care of your pet is always worth it!"
-- "New gaming setup - $500" → **Impulsive**: "Big purchase! Did you really need this right now?"
-- "Grocery shopping - $120" → **Responsible**: "Essential groceries - good planning!"
-
-## 🎮 How to Use
-
-1. **Sign Up**: Create your account with email and password
-2. **Explore Dashboard**: See Capling's mood and your spending summary
-3. **Add Transactions**: Click "Add Transaction" to log purchases
-4. **Watch AI Analysis**: See GPT-powered insights for each transaction
-5. **Track Progress**: Monitor your spending patterns and goals
-6. **Earn Badges**: Unlock achievements for good financial habits
-
-### 🧪 Try These Examples
-
-- **Responsible**: "Whole Foods - $45" (groceries)
-- **Borderline**: "Starbucks - $6.50" (coffee)
-- **Impulsive**: "Amazon - $150" (shopping)
-- **Context Test**: "Emergency vet bill - $300" vs "New shoes - $300"
-
-## 🏗️ Architecture
-
-### Tech Stack
-
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
-- **AI**: OpenAI GPT-3.5-turbo
-- **Styling**: Tailwind CSS 4
-- **UI Components**: Radix UI + shadcn/ui
-
-### Key Components
-
-- **`AuthProvider`**: Authentication context and state management
-- **`ProtectedRoute`**: Route protection for authenticated users
-- **`AuthForm`**: Login/signup form with validation
-- **`UserMenu`**: User profile dropdown with logout
-- **`useSupabaseData`**: Custom hook for data management
-- **`CaplingCharacter`**: Animated dinosaur with mood states
-
-## 🔧 Configuration
-
-### Environment Variables
+## 🔧 Environment Setup
 
 | Variable | Description | Required |
 |----------|-------------|----------|
@@ -137,131 +96,24 @@ Capling uses OpenAI's GPT-3.5-turbo to analyze transactions and provide intellig
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
 
-### Supabase Setup
+## 📱 Demo
 
-1. **Local Development**:
-   ```bash
-   supabase start
-   supabase db reset
-   ```
+Try these example transactions to see AI analysis in action:
 
-2. **Production**: Deploy to Supabase Cloud and update environment variables
-
-### Database Migrations
-
-The app includes a complete database schema in `supabase/migrations/`:
-
-- User authentication and profiles
-- Account management
-- Transaction storage with GPT analysis
-- Goal tracking
-- Row-level security policies
+- **Responsible**: "Whole Foods - $45" (groceries)
+- **Borderline**: "Starbucks - $6.50" (coffee)  
+- **Impulsive**: "Amazon - $150" (shopping)
+- **Context Test**: "Emergency vet bill - $300" vs "New shoes - $300"
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+Deploy to Vercel with one click:
 
-1. **Set up Supabase Cloud**:
-   - Create a new project at [supabase.com](https://supabase.com)
-   - Run migrations: `supabase db push`
-   - Get your project URL and anon key
+1. Set up Supabase Cloud project
+2. Add environment variables
+3. Deploy to Vercel
+4. Watch Capling come to life!
 
-2. **Deploy to Vercel**:
-   - Push code to GitHub
-   - Connect repository to Vercel
-   - Add environment variables:
-     - `OPENAI_API_KEY`
-     - `NEXT_PUBLIC_SUPABASE_URL`
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - Deploy!
+---
 
-### Other Platforms
-
-The app can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- AWS Amplify
-- Google Cloud Run
-
-## 🔒 Security Features
-
-- **Row Level Security**: Database-level access control
-- **JWT Authentication**: Secure token-based auth
-- **Server-Side API Keys**: OpenAI API key never exposed to client
-- **Input Validation**: Form validation and sanitization
-- **HTTPS Only**: Secure connections in production
-
-## 🎨 Design System
-
-### Color Palette (OKLCH-based)
-
-- **Primary**: Teal (`oklch(0.65 0.15 165)`) - Main brand color
-- **Secondary**: Orange (`oklch(0.72 0.12 85)`) - Accent color  
-- **Accent**: Warm orange (`oklch(0.68 0.18 45)`) - Highlights
-- **Destructive**: Red (`oklch(0.62 0.22 25)`) - Warnings/errors
-
-### Typography
-
-- **Font**: Geist (sans) and Geist Mono
-- **Design**: Modern, friendly, approachable
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Supabase Connection Issues**
-   - Verify `NEXT_PUBLIC_SUPABASE_URL` is correct
-   - Check that Supabase is running: `supabase status`
-   - Ensure migrations are applied: `supabase db reset`
-
-2. **GPT Analysis Not Working**
-   - Verify `OPENAI_API_KEY` is set correctly
-   - Check API key has sufficient credits
-   - Review server logs for API errors
-
-3. **Authentication Issues**
-   - Clear browser storage and try again
-   - Check Supabase Auth settings
-   - Verify email confirmation if enabled
-
-4. **Build Errors**
-   - Run `npm install --legacy-peer-deps`
-   - Check TypeScript errors: `npm run build`
-   - Clear Next.js cache: `rm -rf .next`
-
-### Getting Help
-
-- Check the [Supabase documentation](https://supabase.com/docs)
-- Review the [OpenAI API documentation](https://platform.openai.com/docs)
-- Check browser console for error messages
-- Ensure all environment variables are properly set
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our comprehensive guides:
-
-- **[TEAM_SETUP.md](./TEAM_SETUP.md)** - Complete setup guide for new team members
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Detailed contribution guidelines and workflow
-- **[DEVELOPMENT_ENVIRONMENT.md](./DEVELOPMENT_ENVIRONMENT.md)** - Development environment setup
-- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
-
-### Quick Start for Contributors
-
-1. Fork the repository
-2. Follow the [Team Setup Guide](./TEAM_SETUP.md)
-3. Create a feature branch
-4. Make your changes
-5. Test with local Supabase instance
-6. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- [Supabase](https://supabase.com/) for the backend infrastructure
-- [OpenAI](https://openai.com/) for GPT analysis
-- [shadcn/ui](https://ui.shadcn.com/) for the component library
-- [Radix UI](https://www.radix-ui.com/) for accessible primitives
-- [Tailwind CSS](https://tailwindcss.com/) for styling
+**Built with ❤️ for better financial habits**
