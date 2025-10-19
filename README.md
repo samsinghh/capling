@@ -1,27 +1,27 @@
-# 🦕 Capling - AI-Powered Personal Finance Companion
+# Capling - AI-Powered Personal Finance Companion
 
 **A gamified personal finance app featuring an AI-powered dinosaur companion that analyzes your spending and helps you build better financial habits.**
 
-## 🚀 What Makes This Special
+## What Makes This Special
 
-### 🤖 **AI-Powered Financial Analysis**
+### **AI-Powered Financial Analysis**
 - **GPT-4 Integration**: Every transaction gets analyzed by AI for responsible vs. irresponsible spending
 - **Smart Insights**: Real-time feedback on your financial decisions
 - **Context-Aware**: AI understands the difference between "emergency vet bill" vs "impulse shopping"
 
-### 🎮 **Gamified Experience**
+### **Gamified Experience**
 - **Capling Character**: Your personal dinosaur companion that reacts to your spending
 - **Happiness Streak**: Tracks consecutive days of good financial behavior
 - **Level System**: Capling evolves and levels up based on your progress
 - **Achievement Badges**: Unlock rewards for good financial habits
 
-### 💡 **Smart Features**
+### **Smart Features**
 - **Automatic Budget Adjustment**: AI adjusts your budget when you justify overspending
 - **Real-time Mood Tracking**: Capling's mood reflects your financial health
 - **Personalized Lessons**: AI-generated daily financial education
 - **Transaction Justification**: Explain questionable purchases to AI
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
 - Next.js 15.2.4 + TypeScript
@@ -41,17 +41,17 @@
 - OpenAI GPT-4
 - Custom LLM analyzer
 
-## 🎯 Key Features
+## Key Features
 
-- **🔐 Secure Authentication** - Supabase Auth with JWT tokens
-- **📊 Real-time Dashboard** - Live spending analysis and budget tracking
-- **🤖 AI Transaction Analysis** - GPT-4 classifies every purchase
-- **🎮 Gamified Progress** - Happiness streaks and level progression
-- **💳 Smart Budgeting** - AI adjusts budgets based on justified spending
-- **📚 Personalized Learning** - AI-generated financial lessons
-- **🏆 Achievement System** - Badges for good financial habits
+- **Secure Authentication** - Supabase Auth with JWT tokens
+- **Real-time Dashboard** - Live spending analysis and budget tracking
+- **AI Transaction Analysis** - GPT-4 classifies every purchase
+- **Gamified Progress** - Happiness streaks and level progression
+- **Smart Budgeting** - AI adjusts budgets based on justified spending
+- **Personalized Learning** - AI-generated financial lessons
+- **Achievement System** - Badges for good financial habits
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Install dependencies
@@ -71,7 +71,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see Capling in action!
 
-## 🎮 How It Works
+## How It Works
 
 1. **Sign up** and meet Capling, your financial companion
 2. **Add transactions** and watch AI analyze your spending
@@ -79,7 +79,7 @@ Open [http://localhost:3000](http://localhost:3000) to see Capling in action!
 4. **Level up Capling** as you develop better habits
 5. **Learn** from personalized AI-generated financial lessons
 
-## 🏆 Hackathon Highlights
+## Hackathon Highlights
 
 - **AI Integration**: Seamless GPT-4 integration for intelligent financial analysis
 - **Real-time Updates**: Live data synchronization across all components
