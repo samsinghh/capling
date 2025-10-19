@@ -88,7 +88,7 @@ Open [http://localhost:3000](http://localhost:3000) to see Capling in action!
 - **Modern Stack**: Built with latest Next.js, TypeScript, and Supabase
 - **Responsive Design**: Beautiful UI that works on all devices
 
-## 🔧 Environment Setup
+## Environment Setup
 
 | Variable | Description | Required |
 |----------|-------------|----------|
@@ -96,7 +96,7 @@ Open [http://localhost:3000](http://localhost:3000) to see Capling in action!
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
 
-## 📱 Demo
+## Demo
 
 Try these example transactions to see AI analysis in action:
 
@@ -105,15 +105,6 @@ Try these example transactions to see AI analysis in action:
 - **Impulsive**: "Amazon - $150" (shopping)
 - **Context Test**: "Emergency vet bill - $300" vs "New shoes - $300"
 
-## 🚀 Deployment
-
-Deploy to Vercel with one click:
-
-1. Set up Supabase Cloud project
-2. Add environment variables
-3. Deploy to Vercel
-4. Watch Capling come to life!
-
 ---
 
-**Built with ❤️ for better financial habits**
+**Built for better financial habits**
