@@ -1,4 +1,4 @@
-# Capling - AI-Powered Personal Finance Companion
+# Capling - AI-Powered Personal Finance Companion (HackTX 25)
 
 **A gamified personal finance app featuring an AI-powered dinosaur companion that analyzes your spending and helps you build better financial habits.**
 
