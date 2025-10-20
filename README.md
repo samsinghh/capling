@@ -2,6 +2,8 @@
 
 **A gamified personal finance app featuring an AI-powered dinosaur companion that analyzes your spending and helps you build better financial habits.**
 
+**Full submission on [Devpost](https://devpost.com/software/capling)**
+
 ## What Makes This Special
 
 ### **AI-Powered Financial Analysis**
