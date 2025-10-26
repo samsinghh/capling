@@ -13,7 +13,6 @@ interface Star {
 
 export function StarsBackground() {
   const [stars, setStars] = useState<Star[]>([])
-  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
     // Generate random stars
@@ -35,12 +34,11 @@ export function StarsBackground() {
     }))
 
     setStars(newStars)
-    setIsLoaded(true)
   }, [])
   
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-      {isLoaded && stars.map((star) => (
+      {stars.map((star) => (
         <div
           key={star.id}
           className={`absolute rounded-full ${star.animationClass}`}

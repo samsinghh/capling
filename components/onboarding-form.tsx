@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Target, DollarSign } from 'lucide-react'
+import { Plus, X, Target, DollarSign, RefreshCw } from 'lucide-react'
 
 interface OnboardingFormProps {
   userId: string
   userEmail: string
   onComplete: () => void
+  onClearAuth?: () => void
 }
 
 interface Goal {
@@ -24,7 +25,7 @@ interface Goal {
   emoji: string
 }
 
-export function OnboardingForm({ userId, userEmail, onComplete }: OnboardingFormProps) {
+export function OnboardingForm({ userId, userEmail, onComplete, onClearAuth }: OnboardingFormProps) {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [weeklyBudget, setWeeklyBudget] = useState('')
@@ -132,6 +133,19 @@ export function OnboardingForm({ userId, userEmail, onComplete }: OnboardingForm
           <p className="text-muted-foreground">
             Let's set up your financial goals and budget
           </p>
+          {onClearAuth && (
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onClearAuth}
+                className="text-xs"
+              >
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Clear Auth State (Fix Issues)
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Step 1: Weekly Budget */}

@@ -1,13 +1,28 @@
+// Cleaned up process-transaction API route
+
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase'
 import { analyzeTransaction, getLLMConfig } from '@/lib/llm-analyzer'
+import { 
+  validateRequired, 
+  validateNumber, 
+  validateTransactionCategory,
+  validateUserId,
+  createSuccessResponse,
+  createErrorResponse,
+  logError,
+  logInfo
+} from '@/lib/errors'
+import {
+  getUserAccount,
+  createTransaction,
+  updateAccountBalance,
+  validateUserAccess
+} from '@/lib/api-utils'
+import { CreateTransactionRequest, CreateTransactionResponse } from '@/types'
 
 export async function POST(request: NextRequest) {
   try {
-    // Create server client that bypasses RLS
-    const supabase = createServerClient()
-    
-    const body = await request.json()
+    const body: CreateTransactionRequest = await request.json()
     const { 
       userId, 
       accountId, 
@@ -19,122 +34,28 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    if (!userId || !merchant || !amount) {
-      return NextResponse.json(
-        { error: 'Missing required fields: userId, merchant, amount' },
-        { status: 400 }
-      )
-    }
+    validateRequired(userId, 'userId')
+    validateRequired(merchant, 'merchant')
+    validateRequired(amount, 'amount')
+    validateNumber(amount, 'amount', 0.01, 10000)
+    validateTransactionCategory(category)
+    validateUserId(userId)
 
-    // If no accountId provided, get the user's default account or create one
-    let finalAccountId = accountId
-    if (!finalAccountId) {
-      console.log('🔍 Looking for existing accounts for user:', userId)
-      
-      const { data: userAccounts, error: accountsError } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: true })
-        .limit(1)
+    logInfo('Processing transaction', 'process-transaction', { userId, merchant, amount, category })
 
-      console.log('📊 Account lookup result:', { userAccounts, accountsError })
+    // Get or create user account
+    const account = await getUserAccount(userId, accountId)
+    logInfo('Retrieved account', 'process-transaction', { accountId: account.id, balance: account.balance })
 
-      if (accountsError) {
-        console.error('❌ Error looking up accounts:', accountsError)
-        return NextResponse.json(
-          { error: 'Failed to lookup user accounts', details: accountsError.message },
-          { status: 500 }
-        )
-      }
-
-      if (!userAccounts || userAccounts.length === 0) {
-        // No account found, create a default one
-        console.log('No account found for user, creating default account...')
-        
-        const { data: newAccount, error: createAccountError } = await supabase
-          .from('accounts')
-          .insert([{
-            user_id: userId,
-            account_name: 'Main Checking',
-            account_type: 'checking',
-            balance: 1000.00 // Starting balance
-          }])
-          .select()
-          .single()
-
-        if (createAccountError || !newAccount) {
-          console.error('Failed to create account:', createAccountError)
-          return NextResponse.json(
-            { 
-              error: 'Failed to create account for user',
-              details: createAccountError?.message || 'Unknown error',
-              code: createAccountError?.code,
-              hint: createAccountError?.hint,
-              userId: userId
-            },
-            { status: 500 }
-          )
-        }
-
-        finalAccountId = newAccount.id
-        console.log('✅ Created default account:', finalAccountId)
-      } else {
-        finalAccountId = userAccounts[0].id
-        console.log('✅ Found existing account:', finalAccountId)
-      }
-    } else {
-      console.log('✅ Using provided accountId:', finalAccountId)
-    }
-
-    // Get the current account to verify it exists and get current balance
-    console.log('🔍 Verifying account:', { finalAccountId, userId })
-    
-    const { data: account, error: accountError } = await supabase
-      .from('accounts')
-      .select('*')
-      .eq('id', finalAccountId)
-      .eq('user_id', userId)
-      .single()
-
-    console.log('📊 Account verification result:', { account, accountError })
-
-    if (accountError) {
-      console.error('❌ Account verification error:', accountError)
-      return NextResponse.json(
-        { 
-          error: 'Account not found or access denied',
-          details: accountError.message,
-          accountId: finalAccountId,
-          userId: userId
-        },
-        { status: 404 }
-      )
-    }
-
-    if (!account) {
-      console.error('❌ No account found for ID:', finalAccountId)
-      return NextResponse.json(
-        { 
-          error: 'Account not found',
-          accountId: finalAccountId,
-          userId: userId
-        },
-        { status: 404 }
-      )
-    }
-
-    // Determine transaction type (assume debit unless specified otherwise)
+    // Determine transaction type and amount
     const type = amount < 0 ? 'credit' : 'debit'
     const transactionAmount = Math.abs(amount)
-
-    // Check if this is a deposit (negative amount)
     const isDeposit = amount < 0
     
     // Get LLM analysis for the transaction (skip for deposits)
     let analysis
     if (isDeposit) {
-      console.log('💰 Skipping LLM analysis for deposit:', { merchant, amount: transactionAmount, description })
+      logInfo('Skipping LLM analysis for deposit', 'process-transaction', { merchant, amount: transactionAmount })
       analysis = {
         classification: 'responsible' as const,
         reflection: 'Deposit added to your account',
@@ -144,9 +65,8 @@ export async function POST(request: NextRequest) {
       }
     } else {
       try {
-        console.log('🔍 Starting LLM analysis for transaction:', { merchant, amount: transactionAmount, description })
+        logInfo('Starting LLM analysis', 'process-transaction', { merchant, amount: transactionAmount })
         const config = getLLMConfig()
-        console.log('🔧 LLM Config loaded:', { provider: config.provider, hasApiKey: !!config.apiKey })
         
         analysis = await analyzeTransaction(
           merchant,
@@ -155,9 +75,9 @@ export async function POST(request: NextRequest) {
           config,
           account.balance
         )
-        console.log('✅ LLM analysis completed:', analysis)
+        logInfo('LLM analysis completed', 'process-transaction', analysis)
       } catch (llmError) {
-        console.error('❌ LLM analysis failed:', llmError)
+        logError(llmError, 'process-transaction')
         // Fallback analysis if LLM fails
         analysis = {
           classification: 'neutral' as const,
@@ -166,7 +86,6 @@ export async function POST(request: NextRequest) {
           reasoning: 'LLM analysis failed',
           improvement_suggestion: null
         }
-        console.log('🔄 Using fallback analysis:', analysis)
       }
     }
 
@@ -180,14 +99,14 @@ export async function POST(request: NextRequest) {
       minute: '2-digit'
     })
 
-    // Determine if transaction needs justification (skip for deposits)
+    // Determine if transaction needs justification
     const needsJustification = !isDeposit && (analysis.classification === 'irresponsible' || analysis.classification === 'neutral')
     const justificationStatus = needsJustification ? 'pending' : 'none'
 
     // Create the transaction record
     const transactionData = {
       user_id: userId,
-      account_id: finalAccountId,
+      account_id: account.id,
       merchant,
       amount: transactionAmount,
       category: category || 'shopping',
@@ -203,44 +122,17 @@ export async function POST(request: NextRequest) {
       justification_status: justificationStatus
     }
 
-    // Insert transaction into database
-    const { data: newTransaction, error: transactionError } = await supabase
-      .from('transactions')
-      .insert([transactionData])
-      .select()
-      .single()
-
-    if (transactionError) {
-      console.error('Failed to create transaction:', transactionError)
-      return NextResponse.json(
-        { error: 'Failed to create transaction' },
-        { status: 500 }
-      )
-    }
+    // Create transaction in database
+    const newTransaction = await createTransaction(transactionData)
 
     // Update account balance
     const newBalance = type === 'credit' 
       ? account.balance + transactionAmount 
       : account.balance - transactionAmount
 
-    const { error: balanceError } = await supabase
-      .from('accounts')
-      .update({ balance: newBalance })
-      .eq('id', finalAccountId)
+    await updateAccountBalance(account.id, newBalance)
 
-    if (balanceError) {
-      console.error('Failed to update account balance:', balanceError)
-      // Transaction was created but balance update failed
-      return NextResponse.json({
-        success: true,
-        transaction: newTransaction,
-        warning: 'Transaction created but balance update failed',
-        newBalance: account.balance // Return old balance
-      })
-    }
-
-    // Return success response
-    return NextResponse.json({
+    const response: CreateTransactionResponse = {
       success: true,
       transaction: newTransaction,
       newBalance,
@@ -248,14 +140,21 @@ export async function POST(request: NextRequest) {
         classification: analysis.classification,
         reflection: analysis.reflection
       },
-      shouldShowGoalAllocation: transactionAmount > 0 && analysis.classification === 'irresponsible' // Only show goal allocation for irresponsible spending
+      shouldShowGoalAllocation: transactionAmount > 0 && analysis.classification === 'irresponsible'
+    }
+
+    logInfo('Transaction processed successfully', 'process-transaction', { 
+      transactionId: newTransaction.id, 
+      newBalance 
     })
 
+    return NextResponse.json(response)
+
   } catch (error) {
-    console.error('Error processing transaction:', error)
+    logError(error, 'process-transaction')
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      createErrorResponse(error),
+      { status: error instanceof Error && 'statusCode' in error ? error.statusCode : 500 }
     )
   }
 }
@@ -263,47 +162,25 @@ export async function POST(request: NextRequest) {
 // GET endpoint to retrieve recent transactions for an account
 export async function GET(request: NextRequest) {
   try {
-    // Create server client that bypasses RLS
-    const supabase = createServerClient()
-    
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
     const accountId = searchParams.get('accountId')
     const limit = parseInt(searchParams.get('limit') || '10')
 
-    if (!userId || !accountId) {
-      return NextResponse.json(
-        { error: 'Missing required parameters: userId, accountId' },
-        { status: 400 }
-      )
-    }
+    validateRequired(userId, 'userId')
+    validateRequired(accountId, 'accountId')
+    validateUserId(userId!)
 
-    const { data: transactions, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('account_id', accountId)
-      .order('timestamp', { ascending: false })
-      .limit(limit)
+    const { getUserTransactions } = await import('@/lib/api-utils')
+    const transactions = await getUserTransactions(userId!, limit)
 
-    if (error) {
-      console.error('Failed to fetch transactions:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch transactions' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({
-      success: true,
-      transactions: transactions || []
-    })
+    return NextResponse.json(createSuccessResponse(transactions))
 
   } catch (error) {
-    console.error('Error fetching transactions:', error)
+    logError(error, 'process-transaction-get')
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      createErrorResponse(error),
+      { status: error instanceof Error && 'statusCode' in error ? error.statusCode : 500 }
     )
   }
 }

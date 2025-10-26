@@ -7,9 +7,9 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "setup": "node scripts/setup-env.js",
-    "setup-openai": "node scripts/setup-openai.js",
-    "setup-supabase": "node scripts/setup-supabase.js"
+    "setup": "./scripts/setup.sh",
+    "db:reset": "supabase db reset",
+    "db:migrate": "supabase db push"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -1,3 +1,5 @@
+// Improved auth form with better error handling
+
 'use client'
 
 import React, { useState } from 'react'
@@ -8,8 +10,10 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Mail, Lock, User } from 'lucide-react'
+import { Loader2, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react'
 import { DinosaurIcon } from '@/components/dinosaur-icon'
+import { AuthTokenHandler } from '@/components/auth/auth-token-handler'
+import { logError, logInfo } from '@/lib/errors'
 
 export function AuthForm() {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -32,6 +36,8 @@ export function AuthForm() {
         })
         if (!response.ok) {
           setSupabaseError('Supabase is not running. Please start it with: supabase start')
+        } else {
+          setSupabaseError(null)
         }
       } catch (error) {
         setSupabaseError('Supabase is not running. Please start it with: supabase start')
@@ -47,66 +53,92 @@ export function AuthForm() {
     setMessage(null)
 
     try {
+      logInfo(`Starting ${isSignUp ? 'signup' : 'signin'}`, 'auth-form', { email })
+      
       if (isSignUp) {
         const { error } = await signUp(email, password, fullName)
         if (error) {
           setError(error.message)
+          logError(error, 'auth-form')
         } else {
-          setMessage('Check your email for the confirmation link!')
+          setMessage('Account created successfully! Please check your email for the confirmation link.')
+          logInfo('Signup successful', 'auth-form', { email })
         }
       } else {
         const { error } = await signIn(email, password)
         if (error) {
           setError(error.message)
+          logError(error, 'auth-form')
+        } else {
+          setMessage('Signed in successfully!')
+          logInfo('Signin successful', 'auth-form', { email })
         }
       }
-    } catch (err) {
-      setError('An unexpected error occurred')
+    } catch (error) {
+      const errorMessage = 'An unexpected error occurred. Please try again.'
+      setError(errorMessage)
+      logError(error, 'auth-form')
     } finally {
       setLoading(false)
     }
   }
 
+  const clearMessages = () => {
+    setError(null)
+    setMessage(null)
+  }
+
+  const switchMode = (newIsSignUp: boolean) => {
+    setIsSignUp(newIsSignUp)
+    clearMessages()
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 to-background p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 flex items-center justify-center p-4">
+      <AuthTokenHandler />
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="flex justify-center mb-4">
             <DinosaurIcon className="w-12 h-12 text-primary" />
-            <CardTitle className="text-2xl">Capling</CardTitle>
           </div>
+          <CardTitle className="text-2xl font-bold">Welcome to Capling</CardTitle>
           <CardDescription>
-            {isSignUp ? 'Create your account to start tracking your finances' : 'Welcome back! Sign in to continue'}
+            {isSignUp ? 'Create your account to start your financial journey' : 'Sign in to continue your financial journey'}
           </CardDescription>
         </CardHeader>
+        
         <CardContent>
+          {/* Supabase Connection Error */}
           {supabaseError && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>
-                <div className="space-y-2">
-                  <p className="font-semibold">Supabase Not Running</p>
-                  <p className="text-sm">{supabaseError}</p>
-                  <div className="text-xs space-y-1">
-                    <p><strong>To fix this:</strong></p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Install Supabase CLI: <code className="bg-muted px-1 rounded">brew install supabase/tap/supabase</code></li>
-                      <li>Start Supabase: <code className="bg-muted px-1 rounded">supabase start</code></li>
-                      <li>Apply migrations: <code className="bg-muted px-1 rounded">supabase db reset</code></li>
-                      <li>Refresh this page</li>
-                    </ol>
-                  </div>
-                </div>
-              </AlertDescription>
+            <Alert className="mb-4" variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{supabaseError}</AlertDescription>
             </Alert>
           )}
-          
-          <Tabs value={isSignUp ? 'signup' : 'signin'} onValueChange={(value) => setIsSignUp(value === 'signup')}>
+
+          {/* Success Message */}
+          {message && (
+            <Alert className="mb-4" variant="default">
+              <CheckCircle className="h-4 w-4" />
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <Alert className="mb-4" variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <Tabs value={isSignUp ? 'signup' : 'signin'} onValueChange={(value) => switchMode(value === 'signup')}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="signin" className="space-y-4">
+
+            <TabsContent value="signin">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
@@ -140,33 +172,27 @@ export function AuthForm() {
                   </div>
                 </div>
 
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {message && (
-                  <Alert>
-                    <AlertDescription>{message}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button type="submit" className="w-full" disabled={loading || !!supabaseError}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {supabaseError ? 'Supabase Required' : 'Sign In'}
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing In...
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
                 </Button>
               </form>
             </TabsContent>
-            
-            <TabsContent value="signup" className="space-y-4">
+
+            <TabsContent value="signup">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
+                  <Label htmlFor="signup-fullname">Full Name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="signup-name"
+                      id="signup-fullname"
                       type="text"
                       placeholder="Enter your full name"
                       value={fullName}
@@ -176,7 +202,7 @@ export function AuthForm() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <div className="relative">
@@ -208,27 +234,37 @@ export function AuthForm() {
                       minLength={6}
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Password must be at least 6 characters long
+                  </p>
                 </div>
 
-                {error && (
-                  <Alert variant="destructive">
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {message && (
-                  <Alert>
-                    <AlertDescription>{message}</AlertDescription>
-                  </Alert>
-                )}
-
-                <Button type="submit" className="w-full" disabled={loading || !!supabaseError}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {supabaseError ? 'Supabase Required' : 'Create Account'}
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    'Create Account'
+                  )}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
+
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            <p>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+              <button
+                type="button"
+                onClick={() => switchMode(!isSignUp)}
+                className="text-primary hover:underline"
+              >
+                {isSignUp ? 'Sign in' : 'Sign up'}
+              </button>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

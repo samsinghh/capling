@@ -164,10 +164,10 @@ export default function DemoPage() {
                 trend={`${transactions.length} transactions this month`} 
               />
               <SummaryCard
-                title="Happy Streak"
-                value="0 days"
+                title="Reflection Score"
+                value={`${reflectionScore}%`}
                 icon={TrendingUp}
-                trend={`Keep Capling happy to build your streak!`}
+                trend={`${Math.round(spendingInsights.responsiblePercentage)}% responsible spending`}
               />
             </div>
 
